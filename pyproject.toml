@@ -3,23 +3,24 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "mi-letra"
+name = "holograph"
 version = "0.1.0"
-description = "Escribe cualquier texto (con matemáticas) usando tu propia letra a mano; pensado para usarse con asistentes de IA."
+description = "Your own handwriting, typed: turn any text, math included, into pages written in your hand. Built to be driven by AI coding agents."
 readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.10"
 dependencies = ["pymupdf>=1.24", "pillow>=10", "numpy>=1.26"]
-keywords = ["handwriting", "letra", "kindle-scribe", "math", "latex", "ai-agents"]
+keywords = ["handwriting", "handwriting-synthesis", "kindle-scribe", "math", "latex", "ai-agents"]
 
 [project.optional-dependencies]
 test = ["pytest>=7"]
 
 [project.scripts]
-miletra = "miletra:main"
+holograph = "holograph:main"
+miletra = "holograph:main"
 
 [tool.setuptools]
-py-modules = ["miletra", "comun", "plantilla", "extraer", "escribir", "formulas", "ajustes", "simular", "app"]
+py-modules = ["holograph", "miletra", "comun", "plantilla", "extraer", "escribir", "formulas", "ajustes", "simular", "app"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

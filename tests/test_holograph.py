@@ -1,4 +1,4 @@
-"""Pruebas de punta a punta. Usan una carpeta de datos temporal (MILETRA_HOME),
+"""Pruebas de punta a punta. Usan una carpeta de datos temporal (HOLOGRAPH_HOME),
 así que nunca tocan tu letra real."""
 import json
 import os
@@ -13,8 +13,8 @@ sys.path.insert(0, str(ROOT))
 
 
 def run(args, home, check=True):
-    env = dict(os.environ, MILETRA_HOME=str(home), PYTHONIOENCODING="utf-8")
-    r = subprocess.run([sys.executable, str(ROOT / "miletra.py"), *args, "--json"],
+    env = dict(os.environ, HOLOGRAPH_HOME=str(home), PYTHONIOENCODING="utf-8")
+    r = subprocess.run([sys.executable, str(ROOT / "holograph.py"), *args, "--json"],
                        capture_output=True, text=True, encoding="utf-8", env=env, cwd=ROOT)
     data = json.loads(r.stdout)
     if check:
@@ -57,7 +57,7 @@ def test_codigo_de_pagina_ida_y_vuelta():
 # ---------------------------------------------------------------- flujo completo
 @pytest.fixture(scope="module")
 def home(tmp_path_factory):
-    h = tmp_path_factory.mktemp("miletra_home")
+    h = tmp_path_factory.mktemp("holograph_home")
     run(["demo"], h)
     return h
 

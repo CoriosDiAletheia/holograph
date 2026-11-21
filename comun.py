@@ -59,9 +59,10 @@ def decode_code(bits):
 
 # Carpetas. El código vive en APP_DIR; TODO lo personal (tu letra, tus PDF
 # escritos, el registro de plantillas, tus ajustes y salidas) vive en DATA_DIR,
-# que nunca se sube a git. Se puede cambiar con la variable MILETRA_HOME.
+# que nunca se sube a git. Se puede cambiar con la variable HOLOGRAPH_HOME.
 APP_DIR = os.path.dirname(os.path.abspath(__file__))
-DATA_DIR = os.path.abspath(os.environ.get("MILETRA_HOME") or os.path.join(APP_DIR, "datos"))
+DATA_DIR = os.path.abspath(os.environ.get("HOLOGRAPH_HOME") or os.environ.get("MILETRA_HOME")
+                           or os.path.join(APP_DIR, "datos"))
 REGISTRY_DIR = os.path.join(DATA_DIR, "plantillas")
 LETRA_DIR = os.path.join(DATA_DIR, "mi_letra")
 CONFIG_PATH = os.path.join(DATA_DIR, "config.json")

@@ -1,4 +1,4 @@
-# Guía de uso — Mi letra
+# Guía de uso — Holograph
 
 Todo funciona en tu computadora, sin internet y sin depender de nadie.
 
@@ -14,13 +14,13 @@ Todo funciona en tu computadora, sin internet y sin depender de nadie.
 ## Abrir el programa
 
 Doble clic en **`iniciar.bat`**. Se abre una ventana con 4 pestañas.
-(Si no se abre nada, abre una terminal en esta carpeta y ejecuta `python miletra.py app` para ver el error.)
+(Si no se abre nada, abre una terminal en esta carpeta y ejecuta `python holograph.py app` para ver el error.)
 
 ---
 
 ## 1 · Plantilla — crear el PDF para escribir
 
-La plantilla completa por defecto (`python miletra.py plantilla`, o el botón de esta pestaña) es
+La plantilla completa por defecto (`python holograph.py plantilla`, o el botón de esta pestaña) es
 (30 páginas, 268 caracteres: latinas mayúsculas y minúsculas, dígitos, acentos, puntuación,
 griego en mayúscula y minúscula y unos 110 símbolos matemáticos).
 
@@ -147,12 +147,12 @@ de una plantilla nueva, escríbela e impórtala.
 ## Uso por línea de órdenes (opcional)
 
 ```
-python miletra.py estado                       # en qué paso estás
-python miletra.py plantilla --sets "latin:15,digitos:10" -o mas_letras.pdf
-python miletra.py importar escrito.pdf
-python miletra.py escribir "∑_{n=1}^∞ \frac{1}{n^2} = \frac{π^2}{6}" -o formula.png --color negro --papel blanco
-python miletra.py escribir -f apuntes.txt -o apuntes.pdf --hoja --vista
-python miletra.py validar apuntes.txt          # revisa la sintaxis antes
+python holograph.py estado                       # en qué paso estás
+python holograph.py plantilla --sets "latin:15,digitos:10" -o mas_letras.pdf
+python holograph.py importar escrito.pdf
+python holograph.py escribir "∑_{n=1}^∞ \frac{1}{n^2} = \frac{π^2}{6}" -o formula.png --color negro --papel blanco
+python holograph.py escribir -f apuntes.txt -o apuntes.pdf --hoja --vista
+python holograph.py validar apuntes.txt          # revisa la sintaxis antes
 ```
 
 ## Archivos
@@ -164,8 +164,8 @@ python miletra.py validar apuntes.txt          # revisa la sintaxis antes
 | `extraer.py`          | Saca tus letras del PDF escrito                                |
 | `escribir.py`         | Convierte texto en imagen/PDF con tu letra                     |
 | `comun.py`            | Medidas de la plantilla y lista de caracteres (puedes editarla)|
-| `miletra.py`          | La orden principal (todas las funciones, con `--json`)         |
-| `simular.py`          | Rellena una plantilla con letra falsa (`miletra demo`)         |
+| `holograph.py`        | La orden principal (todas las funciones, con `--json`)         |
+| `simular.py`          | Rellena una plantilla con letra falsa (`holograph demo`)       |
 | `datos/`              | **Todo lo personal** (nunca se sube a git):                    |
 | `datos/plantillas/`   | Registro de plantillas generadas (**no lo borres**)            |
 | `datos/mi_letra/`     | Tu letra: `glifos.json` + `glifos/*.png`                       |

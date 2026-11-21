@@ -1,95 +1,137 @@
-# Mi letra ✍️
+# Holograph ✍️
 
-**Escribe cualquier texto — incluidas matemáticas — con tu propia letra.**
-Escribes una plantilla una sola vez en tu tableta (Kindle Scribe, reMarkable,
-Boox, iPad…) o en papel, y a partir de ahí el programa (o tu asistente de IA)
-convierte apuntes, tareas y demostraciones en páginas manuscritas con tu letra.
+**Your own handwriting, typed.**
+Fill in a template once — on an e-ink tablet or on paper — and from then on any text,
+*math included*, comes out as pages written in your hand. Lecture notes, problem sets,
+proofs with matrices and integrals: type them (or let your AI assistant do it) and get
+them back in your handwriting.
 
-*English summary below.*
+![Holograph showcase](docs/img/showcase.png)
+<sub>Rendered with the built-in **demo** handwriting (`holograph demo`, simulated from a system font) so you can try everything before writing a single letter. With your own samples, it looks like *you*.</sub>
 
-![Ejemplo con la letra de demostración](docs/img/demo_epsilon_delta.png)
-<sub>Ejemplo hecho con `miletra demo` (letra simulada con una fuente del sistema). Con tu letra real se ve como tu letra.</sub>
+> *holograph* (n.) — a document written entirely in the handwriting of its author.
 
-## Qué lo hace distinto
+## Why it's different
 
-- **Varias muestras por carácter.** Cada vez que se repite una letra se usa otra de
-  tus versiones (todas por igual, nunca dos iguales seguidas) con ligeras variaciones
-  de tamaño, inclinación y presión. Nada de «la misma *a* siempre».
-- **Matemáticas de verdad.** Fracciones apiladas, matrices, vectores, determinantes,
-  raíces, sumatorias con límites apilados, 268 caracteres (latín, griego, ~110 símbolos),
-  y entiende LaTeX común (`\frac`, `\begin{pmatrix}`, `\alpha`, `\int`…).
-- **Hecho para usarse con IA.** Una sola orden (`miletra`) con salida JSON y un
-  [`AGENTS.md`](AGENTS.md) que enseña a Claude Code, Codex, Cursor, etc. el flujo
-  completo: «pasa este PDF a mi letra» y listo.
-- **Basta con un PDF.** Cada página de la plantilla lleva impreso un código; el PDF
-  exportado por la tableta se reconoce solo, aunque cambie de escala o de orden.
-- **Local y privado.** Tu letra se queda en `datos/` en tu computadora.
+- **It never repeats itself.** You write several samples of every character. Each time a
+  letter appears, Holograph picks one of *your* versions — every sample gets used before any
+  repeats, never the same one twice in a row — and adds slight natural jitter in size, slant,
+  baseline and pen pressure. No more "the same *a* everywhere" look of handwriting fonts.
+- **Real math layout, in your hand.** Stacked fractions, matrices and column vectors,
+  determinants, square roots, sums and integrals with stacked limits, sub/superscripts.
+  268 characters out of the box (Latin, Greek, ~110 math symbols), and it understands
+  everyday LaTeX: `\frac`, `\begin{pmatrix}`, `\alpha`, `\int_0^\infty`, `\mathbb{R}`, `$…$`.
+  Brackets, fraction bars and radicals are stretched from your own strokes.
+- **Made to be driven by AI agents.** One CLI with JSON output, a `status` command that says
+  what to do next, a `validate` command to check markup, `--preview` images to inspect the
+  result, and an [`AGENTS.md`](AGENTS.md) that teaches Claude Code, Codex, Cursor & co. the whole
+  workflow. Ask *"turn this PDF into my handwriting"* and it does the transcription for you.
+- **One PDF is enough.** Every template page carries a printed code (template id + page
+  number) and registration marks, so the PDF exported from your tablet is recognized on its
+  own — even if pages are rescaled, reordered or missing.
+- **Local and private.** Your handwriting never leaves your computer; it lives in `datos/`,
+  which is git-ignored.
 
-## Empezar
+## How it works
 
-Requisitos: Python 3.10+.
+```
+ 1. holograph template   →  PDF with labeled boxes (one character per box, guide lines)
+ 2. you write on it      →  Kindle Scribe, reMarkable, Boox, iPad… or print & scan
+ 3. holograph import     →  aligns pages, reads the codes, cuts out every glyph
+ 4. holograph write      →  lays out your text + formulas with your glyphs → PDF / PNG
+```
+
+## Quick start
+
+Requires Python 3.10+ (Windows, macOS or Linux).
 
 ```bash
-git clone https://github.com/CoriosDiAletheia/mi-letra.git
-cd mi-letra
+git clone https://github.com/CoriosDiAletheia/holograph.git
+cd holograph
 python -m pip install -r requirements.txt
-python miletra.py estado
+python holograph.py status
 ```
-(En Windows también puedes hacer doble clic en `instalar.bat` y luego en `iniciar.bat`.)
 
-### Con un asistente de IA (recomendado)
-
-Abre la carpeta en Claude Code, Codex, Cursor o similar y pídele, por ejemplo:
-
-> «Quiero escribir con mi letra. Prepárame la plantilla.»
-> «Ya escribí la plantilla, está en Descargas/escrito.pdf. Impórtala.»
-> «Pasa este PDF de la tarea a mi letra, en hojas carta y tinta azul.»
-
-El asistente leerá `AGENTS.md` y hará el resto.
-
-### A mano
+Try it immediately with the demo handwriting:
 
 ```bash
-python miletra.py plantilla             # 1. crea datos/plantilla_mi_letra.pdf
-#   2. escríbela en la tableta (un carácter por casilla) y expórtala como PDF
-python miletra.py importar escrito.pdf  # 3. extrae tu letra
-python miletra.py escribir "∑_{n=1}^∞ \frac{1}{n^2} = \frac{π^2}{6}" -o formula.png
-python miletra.py escribir -f apuntes.txt -o apuntes.pdf --hoja
-python miletra.py app                   # interfaz gráfica
+python holograph.py demo
+python holograph.py write --hand demo "\sum_{n=1}^\infty \frac{1}{n^2} = \frac{\pi^2}{6}" -o test.png
 ```
-¿Sin tableta todavía? `python miletra.py demo` crea una letra de prueba.
 
-Documentación: [GUIA.md](GUIA.md) (uso detallado) · [docs/FORMATO.md](docs/FORMATO.md)
-(sintaxis del texto) · [AGENTS.md](AGENTS.md) (para asistentes de IA).
+### With an AI assistant (recommended)
 
-## Uso responsable
+Open the folder in Claude Code, Codex, Cursor or any agent that can run commands, and just ask:
 
-Tu letra es un dato personal: no subas tu carpeta `datos/` a ningún sitio.
-Usa la herramienta para tus propios textos; presentar como manuscrito algo que
-no escribiste a mano puede ir contra las normas de tu escuela o trabajo.
+> *"I want to write with my own handwriting — set me up."*
+> *"I filled in the template, it's in Downloads/written.pdf. Import it."*
+> *"Turn this homework PDF into my handwriting, letter-size pages, blue ink."*
 
-## Proyectos relacionados
+The agent reads [`AGENTS.md`](AGENTS.md), checks `holograph status`, and takes it from there —
+including transcribing a PDF's matrices and fractions into Holograph's markup.
 
-- [Calligraphr](https://www.calligraphr.com/) (comercial) y
-  [handwrite](https://github.com/builtree/handwrite) convierten una hoja de muestras
-  en una fuente `.ttf`.
-- [Handwright](https://williamzujkowski.github.io/posts/2026-03-09-handwright-paper-to-font)
-  hace lo mismo y tiene las variantes por carácter como tarea pendiente.
-- Los generadores «text to handwriting» suelen usar fuentes fijas y no maquetan matemáticas.
+### By hand
 
----
+```bash
+python holograph.py template                 # 1. creates datos/plantilla_mi_letra.pdf
+#   2. write on it (one character per box) and export it as a PDF
+python holograph.py import written.pdf       # 3. extract your handwriting
+python holograph.py review                   #    contact sheet of every sample
+python holograph.py write -f notes.txt -o notes.pdf --sheet --preview
+python holograph.py app                      # graphical interface
+```
+`pip install -e .` also puts a `holograph` command on your PATH.
 
-## English summary
+## The text format in 20 seconds
 
-**Mi letra** turns any text — including math — into pages written in *your own*
-handwriting. You fill in a template once on an e-ink tablet (or paper); the tool
-extracts several samples per character and composes new text with them, picking a
-different sample each time and adding natural jitter. It lays out fractions,
-matrices, determinants and stacked limits, understands common LaTeX, and ships with
-an [`AGENTS.md`](AGENTS.md) so coding agents (Claude Code, Codex, Cursor…) can run
-the whole workflow for you ("convert this PDF into my handwriting"). The UI and docs
-are in Spanish; the CLI is `python miletra.py <command> --json`.
+| You type | You get |
+|---|---|
+| `x^2`, `e^{2t}`, `a_n`, `\sum_{n=1}^\infty` | super/subscripts (stacked when both) |
+| `\frac{a}{b}` | stacked fraction |
+| `\pmat{a & b ; c & d}`, `\pmat{1 ; 0}` | matrix / column vector (`\bmat`, `\vmat` for [ ] and | \|) |
+| `\sqrt{b^2 - 4ac}` | radical with a bar |
+| `\alpha \leq \int \infty \mathbb{R}` or `α ≤ ∫ ∞ ℝ` | LaTeX names or plain Unicode |
 
-## Licencia
+Full reference: [`docs/FORMAT.md`](docs/FORMAT.md).
 
-MIT — ver [LICENSE](LICENSE).
+## Commands
+
+| Command | What it does |
+|---|---|
+| `status` | current stage (`sin_letra` → `esperando_pdf_escrito` → `lista`) and the next step |
+| `template [--sets …]` | template PDF; choose character sets and samples per character |
+| `import WRITTEN.pdf` | extract handwriting from the filled-in PDF |
+| `review` | contact sheet of all samples (discard bad ones) |
+| `chars` | characters you have, derived ones, missing ones |
+| `validate FILE` | check markup and characters without samples |
+| `write (TEXT \| -f FILE \| stdin) -o OUT` | render `.pdf`/`.png`: `--sheet --preview --size --color --paper --messiness --slant --seed` |
+| `demo` | sample handwriting, no tablet needed |
+| `export hand.zip` | back up your handwriting |
+| `app` | desktop GUI |
+
+All commands accept `--json`. Every command also has a Spanish alias (`estado`, `escribir`, …).
+
+## Language note
+
+The project was born in Spanish: the GUI, CLI messages, JSON keys, code comments and the
+detailed user guide ([`GUIA.md`](GUIA.md)) are in Spanish, while this README, [`AGENTS.md`](AGENTS.md)
+and [`docs/FORMAT.md`](docs/FORMAT.md) are in English. AI agents handle both seamlessly.
+Versión en español: [README.es.md](README.es.md).
+
+## Responsible use
+
+Your handwriting is personal data — never upload your `datos/` folder. Use Holograph for your
+own texts; submitting machine-written pages as handwritten work may break your school's or
+employer's rules.
+
+## Related projects
+
+- [Calligraphr](https://www.calligraphr.com/) (commercial) and [handwrite](https://github.com/builtree/handwrite)
+  turn a sample sheet into a `.ttf` font — one glyph per character.
+- [Handwright](https://williamzujkowski.github.io/posts/2026-03-09-handwright-paper-to-font) does the same
+  and lists multiple variants per character as future work.
+- "Text to handwriting" web tools typically use fixed fonts and struggle with equations.
+
+## License
+
+MIT — see [LICENSE](LICENSE). Note that the [PyMuPDF](https://pymupdf.readthedocs.io/) dependency is AGPL-3.0.

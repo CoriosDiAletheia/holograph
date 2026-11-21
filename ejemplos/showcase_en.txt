@@ -1,0 +1,9 @@
+Theorem. lim_{x→2} x^2 = 4.
+Proof. Let ε > 0. Since |x^2 − 4| = |x − 2|·|x + 2|, and |x − 2| < 1 gives
+|x + 2| < 5, choose δ = min{1, \frac{ε}{5}}.
+Then 0 < |x − 2| < δ  ⇒  |x^2 − 4| < 5δ ≤ ε.   ∎
+
+Linear systems.   X′ = \pmat{2 & 0 ; 0 & −1} X + \pmat{e^{2t} ; 2},     W = \vmat{e^{2t} & 0 ; 0 & e^{−t}} = e^{t} ≠ 0.
+X(t) = c_1 \pmat{1 ; 0} e^{2t} + c_2 \pmat{0 ; 1} e^{−t} + \pmat{te^{2t} ; 2}.
+
+Also: ∑_{n=1}^∞ \frac{1}{n^2} = \frac{π^2}{6},   ∮_{∂S} E·dA = \frac{Q}{ε_0},   x = \frac{−b ± \sqrt{b^2 − 4ac}}{2a}.

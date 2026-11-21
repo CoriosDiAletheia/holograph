@@ -1,4 +1,4 @@
-﻿"""Mi letra — programa principal.
+﻿"""Holograph — programa principal (interfaz gráfica).
 
     Doble clic en iniciar.bat   (o:  python app.py)
 
@@ -35,7 +35,7 @@ try:
     import plantilla as P
 except ImportError as e:  # faltan dependencias
     import tkinter.messagebox as mb
-    mb.showerror("Mi letra", f"Falta una librería: {e}.\n\nEjecuta instalar.bat una vez y vuelve a abrir.")
+    mb.showerror("Holograph", f"Falta una librería: {e}.\n\nEjecuta instalar.bat una vez y vuelve a abrir.")
     sys.exit(1)
 
 APP = Path(C.APP_DIR)
@@ -91,7 +91,7 @@ def open_path(p):
             import subprocess
             subprocess.Popen(["notepad.exe", str(p)])
         else:
-            messagebox.showerror("Mi letra", str(e))
+            messagebox.showerror("Holograph", str(e))
 
 
 class ScrollCanvas(ttk.Frame):
@@ -111,7 +111,7 @@ class ScrollCanvas(ttk.Frame):
 class App(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.title("Mi letra")
+        self.title("Holograph")
         self.geometry("1200x700")
         self.minsize(900, 560)
         try:
@@ -183,7 +183,7 @@ class App(tk.Tk):
         except (FileNotFoundError, SystemExit, ValueError):
             self.letra = None
             self.set_status(f"Todavía no hay letra en {self.letra_dir}. Empieza en «1 · Plantilla».")
-        self.title(f"Mi letra — {self.letra_dir.name}")
+        self.title(f"Holograph — {self.letra_dir.name}")
 
     def set_letra_dir(self, d):
         self.letra_dir = Path(d)
@@ -199,7 +199,7 @@ class App(tk.Tk):
 
     def export_letra(self):
         if not (self.letra_dir / "glifos.json").exists():
-            messagebox.showinfo("Mi letra", "Aún no hay letra que exportar.")
+            messagebox.showinfo("Holograph", "Aún no hay letra que exportar.")
             return
         p = filedialog.asksaveasfilename(defaultextension=".zip", initialfile="mi_letra.zip",
                                          filetypes=[("Letra (zip)", "*.zip")])
@@ -220,7 +220,7 @@ class App(tk.Tk):
             return
         d = Path(d)
         if (d / "glifos.json").exists() and not messagebox.askyesno(
-                "Mi letra", "Esa carpeta ya tiene una letra. ¿Reemplazarla?"):
+                "Holograph", "Esa carpeta ya tiene una letra. ¿Reemplazarla?"):
             return
         with zipfile.ZipFile(p) as z:
             for n in z.namelist():

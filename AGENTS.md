@@ -1,131 +1,130 @@
-# AGENTS.md — guía para asistentes de IA
+# AGENTS.md — guide for AI assistants
 
-Este archivo es para ti, asistente (Claude Code, Codex, Cursor, Gemini CLI…).
-El usuario quiere **texto escrito con su propia letra** (incluidas fórmulas
-matemáticas). Tú haces el trabajo pesado — transcribir documentos, preparar el
-texto, generar y revisar — y el usuario solo escribe una vez su plantilla a mano.
+This file is for you, the assistant (Claude Code, Codex, Cursor, Gemini CLI…).
+The user wants **text written in their own handwriting** (math included). You do the heavy
+lifting — transcribing documents, preparing the text, rendering and checking — while the user
+only ever writes their template by hand, once.
 
-Responde al usuario en su idioma. El programa y sus mensajes están en español.
+**Talk to the user in their language.** The program's messages, JSON keys and GUI are in
+Spanish; every command and option also has an English name (used below).
 
-## Reglas de oro
+## Golden rules
 
-1. **Empieza siempre con `python miletra.py estado --json`.** Te dice la etapa
-   (`sin_letra`, `esperando_pdf_escrito`, `lista`) y el siguiente paso exacto.
-2. **Nunca subas ni compartas `datos/`.** Ahí está la letra del usuario (un dato
-   biométrico), sus PDF y sus textos. Ya está en `.gitignore`; no lo quites.
-3. **Transcribe fielmente.** Al pasar un documento a mano no cambies el
-   contenido. Si ves un error matemático en el original, díselo al usuario en
-   lugar de corregirlo en silencio.
-4. **Valida antes de generar** (`miletra validar`) y **mira el resultado**
-   (`--vista` genera PNG a media resolución; ábrelos y revísalos).
-5. Los archivos de trabajo van en `datos/textos/` (entrada) y `datos/salidas/`
-   (resultados). Créalos si no existen.
+1. **Always start with `python holograph.py status --json`.** It reports the stage
+   (`sin_letra` = no handwriting yet, `esperando_pdf_escrito` = template created but not
+   imported, `lista` = ready) and the exact next step (`siguiente_paso`).
+2. **Never upload or share `datos/`.** It holds the user's handwriting (biometric-like personal
+   data), their PDFs and texts. It is git-ignored; keep it that way.
+3. **Transcribe faithfully.** When turning a document into handwriting do not change the
+   content. If you spot a mathematical error in the source, tell the user instead of silently
+   fixing it.
+4. **Validate before rendering** (`validate`) and **look at the result** (`--preview` writes
+   half-size PNGs of every page — open them and check them).
+5. Working files go in `datos/textos/` (input) and `datos/salidas/` (output). Create them if needed.
 
-## Instalación (una vez)
+## Install (once)
 
 ```bash
 python -m pip install -r requirements.txt     # pymupdf, pillow, numpy (Python ≥ 3.10)
-python miletra.py estado
+python holograph.py status
 ```
-Alternativa: `pip install -e .` deja disponible la orden `miletra` en el PATH.
-En Windows, `instalar.bat` hace lo mismo con doble clic.
+Alternatively `pip install -e .` provides a `holograph` command. On Windows, `instalar.bat` does it with a double click.
+Data location can be changed with the `HOLOGRAPH_HOME` environment variable.
 
-## Flujo A — el usuario aún no tiene letra (`etapa: sin_letra`)
+## Flow A — no handwriting yet (`etapa: sin_letra`)
 
-1. `python miletra.py plantilla --json` → crea `datos/plantilla_mi_letra.pdf`
-   (≈30 páginas, 268 caracteres: latín, dígitos, acentos, puntuación, griego y
-   ~110 símbolos matemáticos). Para menos trabajo:
-   `--sets "latin:6,digitos:6,puntuacion:3"`; para más naturalidad: `latin:15`.
-2. Explica al usuario (no lo puedes hacer tú):
-   - Enviar el PDF a su tableta como PDF (Kindle Scribe: *Send to Kindle*;
-     reMarkable, Boox, iPad con GoodNotes/Notability: importar el PDF).
-   - Escribir **un carácter por casilla**, apoyado en la línea continua, sin
-     tocar los cuadros negros ni la fila de cuadritos de abajo.
-   - Exportar el documento con lo escrito como PDF y pasarlo a la computadora.
-   - Sin tableta: imprimir, escribir con bolígrafo negro y escanear a PDF
-     (funciona, pero es menos preciso que una tableta).
-3. Mientras tanto, si quiere probar: `python miletra.py demo` crea una letra de
-   ejemplo con fuentes del sistema (`--letra demo` en las demás órdenes).
+1. `python holograph.py template --json` → creates `datos/plantilla_mi_letra.pdf`
+   (≈30 pages, 268 characters: Latin, digits, accents, punctuation, Greek, ~110 math symbols).
+   Less work: `--sets "latin:6,digitos:6,puntuacion:3"`. More natural results: `latin:15`.
+   Set names: `minusculas mayusculas digitos acentos puntuacion griego_min griego_may
+   operadores relaciones conjuntos calculo flechas delimitadores otros`, groups `latin griego
+   matematicas`, and `extra=CHARS`.
+2. Explain to the user (you cannot do this part):
+   - Send the PDF to their tablet as a PDF (Kindle Scribe: *Send to Kindle*; reMarkable, Boox,
+     iPad with GoodNotes/Notability: import the PDF).
+   - Write **one character per box**, sitting on the solid line, without touching the black
+     corner squares or the row of small squares at the bottom.
+   - Export the annotated document as PDF and bring it to the computer.
+   - No tablet: print it, write with a black pen, scan to PDF (works, less precise).
+3. Meanwhile, to try things out: `python holograph.py demo` builds sample handwriting from
+   system fonts; pass `--hand demo` to the other commands.
 
-## Flujo B — importar el PDF escrito (`etapa: esperando_pdf_escrito`)
+## Flow B — import the filled-in PDF (`etapa: esperando_pdf_escrito`)
 
 ```bash
-python miletra.py importar RUTA/AL/ESCRITO.pdf --json
-python miletra.py revisar          # genera datos/mi_letra/revision.png
+python holograph.py import PATH/TO/WRITTEN.pdf --json
+python holograph.py review          # writes datos/mi_letra/revision.png
 ```
-- Basta con el PDF: cada página trae impreso un código con su plantilla y página.
-- Si dice «plantilla desconocida», la plantilla se creó en otra computadora:
-  copia su `datos/plantillas/<id>.json` aquí.
-- Abre `revision.png` y comenta con el usuario las muestras feas o cortadas
-  (naranja = toca el borde). Para descartar una: mover su PNG a
-  `datos/mi_letra/glifos/_descartados/`.
+- The PDF alone is enough: each page carries a printed code with its template id and page number.
+- "plantilla … desconocida" (unknown template) means it was created on another computer: copy
+  its `datos/plantillas/<id>.json` here.
+- Open `revision.png` and go over bad or clipped samples with the user (orange = touches the
+  box border). To discard one, move its PNG to `datos/mi_letra/glifos/_descartados/`.
 
-## Flujo C — pasar un documento a su letra (`etapa: lista`)
+## Flow C — turn a document into handwriting (`etapa: lista`)
 
-Esto es lo que más se te pedirá («pasa este PDF a mi letra»).
+This is the request you'll get most ("convert this PDF into my handwriting").
 
-1. **Lee la fuente.** Para un PDF:
-   `python -c "import pymupdf,sys; [print(p.get_text()) for p in pymupdf.open(sys.argv[1])]" ARCHIVO.pdf`
-   La extracción de PDF rompe las matrices y fracciones en líneas sueltas:
-   reconstrúyelas pensando en la matemática, no copiando línea a línea. Si
-   puedes ver las páginas como imagen, úsalas para confirmar la estructura.
-2. **Escribe `datos/textos/<nombre>.txt`** en el formato de `docs/FORMATO.md`
-   (resumen abajo). Puedes usar LaTeX común: se traduce solo.
-3. `python miletra.py validar datos/textos/<nombre>.txt --json`
-   → corrige `problemas` (llaves, comandos desconocidos). `sin_muestra` lista
-   caracteres que saldrán con fuente de respaldo: sustitúyelos por otros que sí
-   tenga (p. ej. `•` → `–`) o avisa al usuario.
-4. `python miletra.py escribir -f datos/textos/<nombre>.txt -o datos/salidas/<nombre>.pdf --hoja --vista --json`
-5. **Revisa las vistas** (`*_vista_NN.png`). Problemas típicos y arreglo:
-   - Una ecuación partida entre dos renglones → inserta un salto de línea antes.
-   - `avisos` con «más ancho que la página» → parte la fórmula o baja `--tamano`.
-   - Muy apretado/suelto → `--tamano` (24 por defecto), `--interlineado`.
-6. Entrega el PDF y menciona cualquier cosa que hayas tenido que adaptar.
+1. **Read the source.** For a PDF:
+   `python -c "import pymupdf,sys; [print(p.get_text()) for p in pymupdf.open(sys.argv[1])]" FILE.pdf`
+   Text extraction scatters matrices and fractions over separate lines: rebuild them from the
+   mathematics, not line by line. If you can view the pages as images, use them to confirm structure.
+2. **Write `datos/textos/<name>.txt`** in the format of `docs/FORMAT.md` (summary below).
+   Everyday LaTeX is translated automatically.
+3. `python holograph.py validate datos/textos/<name>.txt --json`
+   → fix `problemas` (braces, unknown commands). `sin_muestra` lists characters that will fall
+   back to a system font: replace them with ones the user has (e.g. `•` → `–`) or tell the user.
+4. `python holograph.py write -f datos/textos/<name>.txt -o datos/salidas/<name>.pdf --sheet --preview --json`
+5. **Inspect the previews** (`*_vista_NN.png`). Typical issues and fixes:
+   - An equation split across two lines → insert a line break before it.
+   - `avisos` saying an item is wider than the page → split the formula or lower `--size`.
+   - Too cramped/loose → `--size` (default 24), `--line-height`.
+6. Deliver the PDF and mention anything you had to adapt.
 
-### Formato en 30 segundos
+### Format in 30 seconds
 
-| Escribes | Sale |
+| You write | Result |
 |---|---|
-| `x^2`, `e^{i(kx − ωt)}`, `a_n`, `x_{p,1}` | super/subíndices (`∑_{n=1}^∞` se apilan) |
-| `\frac{a}{b}` | fracción apilada |
-| `\pmat{a & b ; c & d}` / `\pmat{1 ; 0}` | matriz / vector columna con paréntesis |
-| `\bmat{…}`, `\vmat{…}` | corchetes / determinante |
-| `\sqrt{x^2 + 1}` | raíz con raya |
+| `x^2`, `e^{i(kx − ωt)}`, `a_n`, `x_{p,1}` | super/subscripts (`∑_{n=1}^∞` stacks them) |
+| `\frac{a}{b}` | stacked fraction |
+| `\pmat{a & b ; c & d}` / `\pmat{1 ; 0}` | matrix / column vector in parentheses |
+| `\bmat{…}`, `\vmat{…}` | square brackets / determinant bars |
+| `\sqrt{x^2 + 1}` | radical with bar |
 | `\alpha \leq \int \infty \cdot \to \mathbb{R} \sin` | α ≤ ∫ ∞ · → ℝ sin |
-| `\begin{pmatrix} a & b \\ c & d \end{pmatrix}` | igual que `\pmat` |
-| `$…$` | los `$` se quitan; `\$` = dólar |
-| salto de línea | salto de renglón (las líneas largas se parten solas entre palabras) |
+| `\begin{pmatrix} a & b \\ c & d \end{pmatrix}` | same as `\pmat` |
+| `$…$`, `\(…\)` | delimiters are removed; `\$` = dollar sign |
+| newline | new line (long lines wrap between words automatically) |
 
-Unicode directo también vale: `ε₀ x² ∮ ⇒ ℏ`. Lista completa: `docs/FORMATO.md`.
+Plain Unicode works too: `ε₀ x² ∮ ⇒ ℏ`. Full list: `docs/FORMAT.md`.
 
-## Referencia de órdenes
+## Command reference
 
-| Orden | Para qué |
+| Command (Spanish alias) | Purpose |
 |---|---|
-| `estado` | etapa actual y siguiente paso |
-| `plantilla [--sets S] [-o PDF]` | PDF con casillas |
-| `importar PDF` | extraer letra del PDF escrito |
-| `revisar` | `revision.png` con todas las muestras |
-| `caracteres` | qué hay, qué se deriva, qué falta |
-| `validar ARCHIVO` | sintaxis y caracteres sin muestra |
-| `escribir (TEXTO \| -f ARCHIVO \| stdin) -o SALIDA` | generar `.pdf`/`.png`; `--hoja --vista --tamano --color --papel --desorden --semilla` |
-| `demo` | letra de prueba sin tableta |
-| `exportar ZIP` | copia de seguridad de la letra |
-| `app` | interfaz gráfica para el usuario |
+| `status` (`estado`) | current stage and next step |
+| `template` (`plantilla`) `[--sets S] [-o PDF]` | template PDF |
+| `import` (`importar`) `PDF` | extract handwriting from the written PDF |
+| `review` (`revisar`) | `revision.png` with every sample |
+| `chars` (`caracteres`) | available, derived and missing characters |
+| `validate` (`validar`) `FILE` | markup problems and characters without samples |
+| `write` (`escribir`) `(TEXT \| -f FILE \| stdin) -o OUT` | render `.pdf`/`.png`; `--sheet --preview --size --color --paper --messiness --slant --seed` |
+| `demo` | sample handwriting without a tablet |
+| `export` (`exportar`) `ZIP` | back up the handwriting |
+| `app` | GUI for the user |
 
-Todas aceptan `--json`; con error devuelven `{"ok": false, "error": "..."}` y
-código de salida 1. Las carpetas se pueden mover con la variable `MILETRA_HOME`.
+Every command accepts `--json`; on error it prints `{"ok": false, "error": "..."}` and exits 1.
+Colors: `black blue ballpoint red green graphite`; paper: `ruled grid white transparent`.
 
-## Cómo funciona (por si tienes que modificar el código)
+## Architecture (if you need to change the code)
 
-| Módulo | Qué hace |
+| Module | Role |
 |---|---|
-| `comun.py` | geometría de la plantilla, conjuntos de caracteres, alias, rutas, fuentes |
-| `plantilla.py` | genera el PDF (marcas de registro + código binario de página/plantilla) |
-| `extraer.py` | alinea con las marcas, lee el código, recorta cada casilla, guarda glifos |
-| `ajustes.py` | correcciones al cargar: tilde aguda, signos al eje matemático, primas, ✓ |
-| `formulas.py` | parser del formato + maquetación de fórmulas (cajas, fracciones, matrices) |
-| `escribir.py` | `Letra` (carga glifos, elige variantes sin repetir) y `render` (páginas) |
-| `miletra.py` | CLI · `app.py` interfaz Tk · `simular.py` relleno falso para pruebas |
+| `comun.py` | template geometry, character sets, aliases, paths, system fonts |
+| `plantilla.py` | builds the template PDF (registration marks + binary page/template code) |
+| `extraer.py` | aligns with the marks, decodes the code, crops each box, stores glyphs |
+| `ajustes.py` | load-time fixes: clean acute accents, signs on the math axis, primes, ✓ |
+| `formulas.py` | markup parser + formula layout (boxes, fractions, matrices, radicals, LaTeX) |
+| `escribir.py` | `Letra` (loads glyphs, picks variants without repeats) and `render` (pages) |
+| `holograph.py` | CLI · `app.py` Tk GUI · `simular.py` fake handwriting for tests |
 
-Pruebas: `python -m pytest -q` (usan una letra simulada; no tocan `datos/`).
+Tests: `python -m pytest -q` (they use simulated handwriting in a temp dir; `datos/` is never touched).

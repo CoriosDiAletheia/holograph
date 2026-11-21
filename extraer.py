@@ -305,7 +305,7 @@ def process_pdf(pdf_path, layout_path, out_dir: Path, dpi=DPI, log=print, progre
     if progress:
         progress(len(doc), len(doc))
     if not results:
-        raise SystemExit("No se reconoció ninguna página. ¿Es el PDF de una plantilla de Mi letra?")
+        raise SystemExit("No se reconoció ninguna página. ¿Es el PDF de una plantilla de Holograph?")
     return results
 
 

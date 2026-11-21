@@ -8,7 +8,7 @@ Una línea vacía deja un renglón en blanco.
 
 Cualquier carácter Unicode. Se usa tu muestra si la tienes; si no, se deriva de
 otra (ver abajo) o, como último recurso, se dibuja con una fuente de respaldo
-(`miletra validar` te dice cuáles).
+(`holograph validar` te dice cuáles).
 
 ## Super y subíndices
 
@@ -57,7 +57,7 @@ tus propios trazos.
   funciones (`\sin \cos \log \ln \exp \det \lim \max \min`…).
   Lista exacta: `LATEX_SYMBOLS` en `formulas.py`.
 
-Un comando que no esté en la lista se escribe literal y `miletra validar` lo
+Un comando que no esté en la lista se escribe literal y `holograph validar` lo
 avisa como «comando desconocido».
 
 ## Literales

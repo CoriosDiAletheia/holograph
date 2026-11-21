@@ -1,6 +1,6 @@
 @echo off
 cd /d "%~dp0"
-echo Instalando las librerias de Mi letra...
+echo Instalando las librerias de Holograph...
 python -m pip install --upgrade -r requirements.txt
 if errorlevel 1 (
     echo.

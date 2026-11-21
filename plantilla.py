@@ -55,7 +55,7 @@ def save_layout(layout, out_pdf: Path | None = None):
     return reg
 
 
-def build(items, out_pdf: Path, title="Mi letra", spec=""):
+def build(items, out_pdf: Path, title="Holograph", spec=""):
     session = secrets.token_hex(3)          # 24 bits
     slots = [(ch, i) for ch, n in items for i in range(n)]
     n_pages = (len(slots) + C.CELLS_PER_PAGE - 1) // C.CELLS_PER_PAGE
@@ -127,7 +127,7 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--sets", default=C.DEFAULT_SETS)
     ap.add_argument("-o", "--out", default="plantilla.pdf")
-    ap.add_argument("--titulo", default="Mi letra")
+    ap.add_argument("--titulo", default="Holograph")
     a = ap.parse_args()
     items = C.parse_sets(a.sets)
     pages, cells, reg = build(items, Path(a.out), a.titulo, a.sets)
