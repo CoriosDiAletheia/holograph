@@ -7,7 +7,7 @@ name = "holograph"
 version = "0.1.0"
 description = "Your own handwriting, typed: turn any text, math included, into pages written in your hand. Built to be driven by AI coding agents."
 readme = "README.md"
-license = { text = "MIT" }
+license = { text = "AGPL-3.0-or-later" }
 requires-python = ">=3.10"
 dependencies = ["pymupdf>=1.24", "pillow>=10", "numpy>=1.26"]
 keywords = ["handwriting", "handwriting-synthesis", "kindle-scribe", "math", "latex", "ai-agents"]

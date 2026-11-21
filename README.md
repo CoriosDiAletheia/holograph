@@ -135,4 +135,7 @@ employer's rules.
 
 ## License
 
-MIT — see [LICENSE](LICENSE). Note that the [PyMuPDF](https://pymupdf.readthedocs.io/) dependency is AGPL-3.0.
+Copyright © 2026 CoriosDiAletheia and contributors.
+Licensed under the [GNU AGPL-3.0](LICENSE) (or any later version) — the same license as its PDF engine, [PyMuPDF](https://pymupdf.readthedocs.io/).
+You can use, study, modify and share Holograph freely. If you distribute a modified version, or
+offer it to others as a web service, you must publish your source code under the same license.

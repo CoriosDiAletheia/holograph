@@ -54,4 +54,6 @@ que no escribiste a mano puede ir contra las normas de tu escuela o trabajo.
 
 ## Licencia
 
-MIT — ver [LICENSE](LICENSE). La dependencia PyMuPDF es AGPL-3.0.
+[GNU AGPL-3.0](LICENSE), la misma que su motor de PDF (PyMuPDF). Puedes usar, estudiar,
+modificar y compartir Holograph libremente; si distribuyes una versión modificada o la ofreces
+como servicio web, debes publicar tu código con la misma licencia.
