@@ -1,0 +1,34 @@
+Límites: demostración ε-δ
+
+Definición. Sea f definida cerca de a. Decimos que lím_{x→a} f(x) = L si
+∀ε > 0 ∃δ > 0 tal que 0 < |x − a| < δ ⇒ |f(x) − L| < ε.
+
+Teorema. lím_{x→2} x^2 = 4.
+
+Demostración. Sea ε > 0 arbitrario. Buscamos δ > 0 con
+0 < |x − 2| < δ ⇒ |x^2 − 4| < ε.
+Factorizamos: |x^2 − 4| = |x − 2|·|x + 2|.
+Primero acotamos |x + 2|. Si pedimos |x − 2| < 1, entonces
+1 < x < 3, así que 3 < x + 2 < 5 y por lo tanto |x + 2| < 5.
+Elegimos δ = mín{1, ε/5}. Si 0 < |x − 2| < δ, como δ ≤ 1 se cumple
+|x + 2| < 5, y como δ ≤ ε/5:
+|x^2 − 4| = |x − 2|·|x + 2| < (ε/5)·5 = ε.
+Como ε era arbitrario, lím_{x→2} x^2 = 4.   ∎
+
+Ejercicio. Demuestre con ε-δ que lím_{x→3} (x^2 + 1)/(x − 1) = 5.
+
+Solución. Sea ε > 0. Primero simplificamos la diferencia:
+f(x) − 5 = (x^2 + 1 − 5x + 5)/(x − 1) = (x^2 − 5x + 6)/(x − 1) = (x − 2)(x − 3)/(x − 1).
+Entonces |f(x) − 5| = |x − 3| · |x − 2| / |x − 1|.
+Igual que en el teorema, acotamos los factores que no van a cero.
+Si |x − 3| < 1, entonces 2 < x < 4, de donde:
+  – 0 < x − 2 < 2  ⇒  |x − 2| < 2,
+  – 1 < x − 1 < 3  ⇒  |x − 1| > 1  ⇒  1/|x − 1| < 1.
+(Ojo: el δ ≤ 1 también nos aleja de x = 1, donde f no está definida.)
+Así, para |x − 3| < 1:  |f(x) − 5| < |x − 3| · 2 · 1 = 2|x − 3|.
+Tomamos δ = mín{1, ε/2}. Si 0 < |x − 3| < δ, entonces
+|f(x) − 5| < 2|x − 3| < 2 · (ε/2) = ε.
+Por lo tanto lím_{x→3} (x^2 + 1)/(x − 1) = 5.   ∎
+
+Comprobación numérica: con ε = 0,01 sale δ = mín{1; 0,005} = 0,005.
+Para x = 3,005: f(x) = 10,030025/2,005 ≈ 5,0025, y |f(x) − 5| ≈ 0,0025 < 0,01.

@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mi-letra"
+version = "0.1.0"
+description = "Escribe cualquier texto (con matemáticas) usando tu propia letra a mano; pensado para usarse con asistentes de IA."
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+dependencies = ["pymupdf>=1.24", "pillow>=10", "numpy>=1.26"]
+keywords = ["handwriting", "letra", "kindle-scribe", "math", "latex", "ai-agents"]
+
+[project.optional-dependencies]
+test = ["pytest>=7"]
+
+[project.scripts]
+miletra = "miletra:main"
+
+[tool.setuptools]
+py-modules = ["miletra", "comun", "plantilla", "extraer", "escribir", "formulas", "ajustes", "simular", "app"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

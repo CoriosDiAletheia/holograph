@@ -1,0 +1,9 @@
+Electrodinámica — Tarea 3
+Problema 1. Ecuaciones de Maxwell en el vacío:
+∇·E = ρ/ε_0,   ∇·B = 0,   ∇×E = −∂B/∂t,   ∇×B = μ_0 J + μ_0 ε_0 ∂E/∂t.
+Por el teorema de la divergencia, ∭_V (∇·E) dV = ∯_{∂V} E·dA = Q/ε_0.
+Problema 2. Sea ψ(x,t) = A e^{i(kx − ωt)}. Entonces ħω = E y p = ħk.
+Además ∑_{n=1}^∞ 1/n^2 = π^2/6 y ∫_0^{2π} sin^2θ dθ = π.
+Problema 3. ∀ε > 0 ∃δ > 0 : |x − a| < δ ⇒ |f(x) − L| < ε.
+Si A ⊆ B y B ∩ C = ∅, entonces A ∩ C = ∅.   ⟨ψ|φ⟩ ∈ ℂ,   ‖v‖ ≥ 0.
+¿Quedó claro? ¡Sí! La niña comió piñas y pingüinos de azúcar. (≈ 98,7 %)
