@@ -174,7 +174,7 @@ class Letra:
 def render(text, letra: Letra, *, xh=28, ancho=1700, alto=None, margen=None,
            interlineado=3.0, color="azul", papel="rayado", modo="aleatorio",
            semilla=None, inclinacion=0.0, desorden=1.0, espaciado=0.12, formato=True, avisos=None,
-           espacio_palabras=1.0):
+           espacio_palabras=1.0, al_escribir=None):
     """Devuelve una lista de páginas (PIL RGBA). `xh` = altura de la x en px.
 
     alto=None -> una sola imagen tan alta como haga falta.
@@ -258,6 +258,8 @@ def render(text, letra: Letra, *, xh=28, ancho=1700, alto=None, margen=None,
                     x = drift_x + wx + gx * xh
                     y = base - dy * xh + slope * (x - margen) + rnd.gauss(0, 0.035 * xh * desorden * sc)
                     _stamp(alpha, g, x, y, xh * sc, rnd, inclinacion, desorden)
+                if al_escribir:                  # p. ej. para animar la escritura palabra a palabra
+                    al_escribir(len(pages), alpha)
         paper = _paper(ancho, H, papel, first_base, lh, xh, margen)
         inkl = Image.new("RGBA", (ancho, H), ink + (255,))
         inkl.putalpha(alpha)

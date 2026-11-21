@@ -6,7 +6,7 @@ Fill in a template once — on an e-ink tablet or on paper — and from then on 
 proofs with matrices and integrals: type them (or let your AI assistant do it) and get
 them back in your handwriting.
 
-![Holograph showcase](docs/img/showcase.png)
+![Holograph: typed markup in, handwriting out](docs/img/demo.gif)
 <sub>Rendered with the built-in **demo** handwriting (`holograph demo`, simulated from a system font) so you can try everything before writing a single letter. With your own samples, it looks like *you*.</sub>
 
 > *holograph* (n.) — a document written entirely in the handwriting of its author.
@@ -81,6 +81,10 @@ python holograph.py write -f notes.txt -o notes.pdf --sheet --preview
 python holograph.py app                      # graphical interface
 ```
 `pip install -e .` also puts a `holograph` command on your PATH.
+
+## Example output
+
+![A proof, a linear system, a series and the quadratic formula, in handwriting](docs/img/showcase.png)
 
 ## The text format in 20 seconds
 
