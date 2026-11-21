@@ -173,7 +173,8 @@ class Letra:
 # ------------------------------------------------------------------ maquetación
 def render(text, letra: Letra, *, xh=28, ancho=1700, alto=None, margen=None,
            interlineado=3.0, color="azul", papel="rayado", modo="aleatorio",
-           semilla=None, inclinacion=0.0, desorden=1.0, espaciado=0.12, formato=True, avisos=None):
+           semilla=None, inclinacion=0.0, desorden=1.0, espaciado=0.12, formato=True, avisos=None,
+           espacio_palabras=1.0):
     """Devuelve una lista de páginas (PIL RGBA). `xh` = altura de la x en px.
 
     alto=None -> una sola imagen tan alta como haga falta.
@@ -187,7 +188,9 @@ def render(text, letra: Letra, *, xh=28, ancho=1700, alto=None, margen=None,
     margen = int(margen if margen is not None else xh * 2.5)
     lh = xh * interlineado
     bags = {}
-    lay = F.Layout(letra, rnd, bags, modo, espaciado, 0.04 * desorden, ajustes.math_axis(letra.glyphs))
+    lay = F.Layout(letra, rnd, bags, modo, espaciado, 0.04 * desorden, ajustes.math_axis(letra.glyphs),
+                   word_space=espacio_palabras)
+    space = letra.space_u * xh * espacio_palabras
     max_w = ancho - 2 * margen
 
     # 1) partir en líneas (respetando saltos de línea y ajustando palabras)
@@ -204,7 +207,7 @@ def render(text, letra: Letra, *, xh=28, ancho=1700, alto=None, margen=None,
                 txt = "".join(getattr(nd, "ch", "▢") for nd in word)[:40]
                 avisos.append(f"Elemento más ancho que la página ({w / max_w:.0%} del ancho): «{txt}». "
                               "Pártelo en varias líneas o reduce --tamano.")
-            gap = letra.space_u * xh * (1 + rnd.gauss(0, 0.15 * desorden)) if cur else 0
+            gap = space * (1 + rnd.gauss(0, 0.15 * desorden)) if cur else 0
             if cur and cur_w + gap + w > max_w:
                 lines.append(cur)
                 cur, cur_w, gap = [], 0.0, 0
@@ -215,7 +218,7 @@ def render(text, letra: Letra, *, xh=28, ancho=1700, alto=None, margen=None,
     # 2) colocar cada línea en un renglón del papel (las altas ocupan varios) y paginar
     first_base = margen + xh * 2
     H_page = alto
-    pages_lines, page, prev_b, prev_bottom = [], [], None, None
+    pages_lines, page, prev_b, prev_bottom, prev_tall = [], [], None, None, False
     for line in lines:
         asc = max([b.asc for _, b in line] + [1.0]) * xh
         desc = min([b.desc for _, b in line] + [-0.3]) * xh
@@ -225,7 +228,11 @@ def render(text, letra: Letra, *, xh=28, ancho=1700, alto=None, margen=None,
                 b += lh
         else:
             b = prev_b + lh
-            while b - asc < prev_bottom - 0.45 * xh:     # se tolera que colas e índices se rocen
+            # en renglones normales se tolera que colas e índices se rocen; si hay algo alto
+            # (matrices, fracciones grandes) se deja aire de verdad
+            line_tall = any(bx.tall for _, bx in line)
+            tol = 0.25 * xh if (line_tall or prev_tall) else -0.45 * xh
+            while b - asc < prev_bottom + tol:
                 b += lh
         if H_page and page and b - desc > H_page - margen * 0.6:
             pages_lines.append(page)
@@ -234,7 +241,7 @@ def render(text, letra: Letra, *, xh=28, ancho=1700, alto=None, margen=None,
             while b - asc < margen * 0.5:
                 b += lh
         page.append((b, line))
-        prev_b, prev_bottom = b, b - desc
+        prev_b, prev_bottom, prev_tall = b, b - desc, any(bx.tall for _, bx in line)
     pages_lines.append(page)
 
     pages = []

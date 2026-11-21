@@ -216,7 +216,8 @@ LABEL_FONTS = ["arial.ttf", "segoeui.ttf", "seguisym.ttf", "cambria.ttc", "times
                "DejaVuSans.ttf", "NotoSans-Regular.ttf", "NotoSansMath-Regular.ttf",
                "NotoSansSymbols-Regular.ttf", "Arial Unicode.ttf", "STIXGeneral.otf",
                "STIXTwoMath-Regular.otf", "LiberationSans-Regular.ttf", "FreeSerif.ttf"]
-HAND_FONTS = ["Inkfree.ttf", "segoesc.ttf", "Chalkboard.ttc", "Noteworthy.ttc", "MarkerFelt.ttc",
+# (Segoe Print primero: en Ink Free la «t» pequeña se confunde con «+»)
+HAND_FONTS = ["segoepr.ttf", "Inkfree.ttf", "segoesc.ttf", "Chalkboard.ttc", "Noteworthy.ttc", "MarkerFelt.ttc",
               "ComicNeue-Regular.ttf", "Caveat-Regular.ttf", "PatrickHand-Regular.ttf"]
 
 

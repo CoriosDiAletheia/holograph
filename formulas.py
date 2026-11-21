@@ -28,6 +28,9 @@ SUB_SUP_SCALE = 0.62
 SHIFT = {1: 0.95, -1: -0.45}
 COMMANDS = ("\\frac", "\\pmat", "\\bmat", "\\vmat", "\\sqrt")
 BRACKETS = {"p": ("(", ")"), "b": ("[", "]"), "v": ("|", "|")}
+# Operadores cuyos límites se escriben debajo/encima (como a mano), no al lado
+BIG_OPS = set("∑∏∐⋃⋂")
+LIMIT_WORDS = ("lim", "lím", "máx", "mín", "max", "min", "sup", "inf")
 
 # Comandos de LaTeX que se convierten en un carácter (para que una IA pueda
 # escribir como está acostumbrada).
@@ -277,8 +280,10 @@ class Box:
     w: float = 0.0
     asc: float = 0.0       # lo más alto  (sobre la línea base)
     desc: float = 0.0      # lo más bajo  (negativo si baja de la línea base)
+    tall: bool = False     # contiene una matriz/vector: necesita aire vertical de verdad
 
     def add(self, other: "Box", dx, ddy):
+        self.tall = self.tall or other.tall
         for x, dy, g, s in other.items:
             self.items.append((x + dx, dy + ddy, g, s))
         if other.items:
@@ -296,19 +301,63 @@ def _stretch(g, fx=1.0, fy=1.0):
 
 
 class Layout:
-    def __init__(self, letra, rnd, bags, mode, espaciado, var_tamano, axis):
+    def __init__(self, letra, rnd, bags, mode, espaciado, var_tamano, axis, word_space=1.0):
         self.letra, self.rnd, self.bags, self.mode = letra, rnd, bags, mode
         self.gap, self.var, self.axis = espaciado, var_tamano, axis
+        self.word_space = word_space
 
     # -------------------------------------------------------------- nodos
+    def _op_len(self, nodes, i):
+        """¿Empieza en i un operador cuyos límites van debajo/encima? -> nº de nodos."""
+        nd = nodes[i]
+        n = len(nodes)
+        if isinstance(nd, Ch) and nd.ch in BIG_OPS and i + 1 < n and isinstance(nodes[i + 1], Script):
+            return 1
+        for word in LIMIT_WORDS:
+            k = len(word)
+            if (i + k < n and isinstance(nodes[i + k], Script) and nodes[i + k].pos < 0
+                    and all(isinstance(nodes[i + j], Ch) and nodes[i + j].ch == word[j] for j in range(k))
+                    and not (i > 0 and isinstance(nodes[i - 1], Ch) and nodes[i - 1].ch.isalpha())):
+                return k
+        return 0
+
+    def _with_limits(self, nodes, i, k, s):
+        """Operador (∑, ∏, lim…) con sus límites centrados debajo y encima."""
+        big = k == 1
+        op = self.seq(nodes[i:i + k], s * (1.3 if big else 1.0))
+        j, lims = i + k, []
+        while j < len(nodes) and isinstance(nodes[j], Script) and len(lims) < 2:
+            lims.append((nodes[j].pos, self.seq(nodes[j].body, s * SUB_SUP_SCALE)))
+            j += 1
+        W = max([op.w] + [b.w for _, b in lims])
+        out = Box()
+        out.add(op, (W - op.w) / 2, 0)
+        for pos, b in lims:
+            dy = (op.desc - 0.12 * s - b.asc) if pos < 0 else (op.asc + 0.1 * s - b.desc)
+            out.add(b, (W - b.w) / 2, dy)
+        out.w = W
+        out.tall = bool(lims)
+        return out, j
+
     def seq(self, nodes, s=1.0) -> Box:
         box, x = Box(), 0.0
         last_gap = 0.0
         prev_script = None          # (pos, x_inicio, x_fin) para apilar sub/super
-        for nd in nodes:
+        i = 0
+        while i < len(nodes):
+            nd = nodes[i]
+            i += 1
             if isinstance(nd, Ch) and nd.ch == " ":
-                x += self.letra.space_u * s
+                x += self.letra.space_u * s * self.word_space
                 last_gap = 0.0
+                prev_script = None
+                continue
+            k = self._op_len(nodes, i - 1)
+            if k:
+                b, i = self._with_limits(nodes, i - 1, k, s)
+                box.add(b, x, 0)
+                last_gap = self.gap * s
+                x += b.w + last_gap
                 prev_script = None
                 continue
             b = self.node(nd, s)
@@ -433,4 +482,5 @@ class Layout:
                 out.add(bbox, x, 0)
                 x += bw
         out.w = x
+        out.tall = True
         return out

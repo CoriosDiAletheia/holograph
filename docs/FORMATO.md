@@ -17,7 +17,8 @@ otra (ver abajo) o, como último recurso, se dibuja con una fuente de respaldo
 | `x^2` | un carácter arriba |
 | `e^{2t}` | todo lo de las llaves arriba |
 | `a_n`, `x_{p,1}` | abajo |
-| `∑_{n=1}^∞`, `∫_0^{2π}` | sub y super seguidos se **apilan** |
+| `∫_0^{2π}`, `x_i^2` | sub y super seguidos se **apilan** a la derecha |
+| `∑_{n=1}^∞`, `∏_{k=1}^n`, `lím_{x→0}` | tras `∑ ∏ ∐ ⋃ ⋂` y `lim lím min mín max máx sup inf` los límites van **debajo y encima** |
 | `x^\alpha`, `x^\frac{1}{2}` | un comando también vale como índice |
 
 Las llaves que **no** siguen a `^`, `_` o a un comando se escriben tal cual:

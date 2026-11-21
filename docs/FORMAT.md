@@ -17,7 +17,8 @@ from another character (see below) or, as a last resort, drawn with a fallback s
 | `x^2` | one character up |
 | `e^{2t}` | everything in braces up |
 | `a_n`, `x_{p,1}` | down |
-| `∑_{n=1}^∞`, `∫_0^{2π}` | a sub followed by a sup (or vice versa) is **stacked** |
+| `∫_0^{2π}`, `x_i^2` | a sub followed by a sup (or vice versa) is **stacked** on the right |
+| `∑_{n=1}^∞`, `∏_{k=1}^n`, `lim_{x→0}` | after `∑ ∏ ∐ ⋃ ⋂` and `lim lím min mín max máx sup inf` the limits go **below and above** (and `∑`/`∏` are drawn larger) |
 | `x^\alpha`, `x^\frac{1}{2}` | a command also works as an index |
 
 Braces that do **not** follow `^`, `_` or a command are written literally:
@@ -56,6 +57,13 @@ Brackets, bars, the radical sign and fraction bars are stretched versions of you
 
 A command that is not on the list is written literally, and `holograph validate` reports it
 as *comando desconocido* (unknown command).
+
+## Not supported (and what to do instead)
+
+Handwriting has no bold, italics, font sizes, centering, boxes or tables. When transcribing:
+bold/italic → plain letters; headings → their own line with a blank line before; centered
+display equations → their own line; boxed results → their own line (optionally preceded by
+`⇒` or `✓`); tables and figures → describe them or leave them out and say so.
 
 ## Literals
 

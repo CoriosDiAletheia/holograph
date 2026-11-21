@@ -25,6 +25,7 @@ Spanish; every command and option also has an English name (used below).
 ## Install (once)
 
 ```bash
+python -c "import pymupdf, PIL, numpy"        # if this succeeds, skip the next line
 python -m pip install -r requirements.txt     # pymupdf, pillow, numpy (Python ≥ 3.10)
 python holograph.py status
 ```
@@ -47,7 +48,10 @@ Data location can be changed with the `HOLOGRAPH_HOME` environment variable.
    - Export the annotated document as PDF and bring it to the computer.
    - No tablet: print it, write with a black pen, scan to PDF (works, less precise).
 3. Meanwhile, to try things out: `python holograph.py demo` builds sample handwriting from
-   system fonts; pass `--hand demo` to the other commands.
+   system fonts into `datos/letra_demo/`. Pass `--hand demo` to `write`, `validate`, `chars`
+   and `review`. The demo does not change `status` (it still says `sin_letra` until the user
+   imports their own handwriting). It is a font-based imitation: tell the user it will look far
+   more natural with their real samples.
 
 ## Flow B — import the filled-in PDF (`etapa: esperando_pdf_escrito`)
 
@@ -70,22 +74,36 @@ This is the request you'll get most ("convert this PDF into my handwriting").
    Text extraction scatters matrices and fractions over separate lines: rebuild them from the
    mathematics, not line by line. If you can view the pages as images, use them to confirm structure.
 2. **Write `datos/textos/<name>.txt`** in the format of `docs/FORMAT.md` (summary below).
-   Everyday LaTeX is translated automatically.
+   Everyday LaTeX is translated automatically. Things the format cannot express and what to do:
+   - **bold / italics** (e.g. bold vectors **X**) → plain letters (handwriting has no bold);
+   - **headings** → their own line, with a blank line before;
+   - **centered display equations** → their own line (text is always left-aligned);
+   - **boxed answers** → write the answer on its own line; optionally add `✓` or `⇒` before it;
+   - **tables / figures** → describe them in text or tell the user they were left out.
+   When the user names a part of a document ("part (a)"), confirm the scope if the shared
+   introduction or title is ambiguous; by default include only that part.
 3. `python holograph.py validate datos/textos/<name>.txt --json`
    → fix `problemas` (braces, unknown commands). `sin_muestra` lists characters that will fall
    back to a system font: replace them with ones the user has (e.g. `•` → `–`) or tell the user.
 4. `python holograph.py write -f datos/textos/<name>.txt -o datos/salidas/<name>.pdf --sheet --preview --json`
+   Defaults: blue ink, ruled paper, x-height 24 px. `--sheet` paginates into **US-letter**
+   pages (the only page size); without it you get one tall image. So "letter-size, blue ink"
+   = `--sheet` (blue is already the default).
 5. **Inspect the previews** (`*_vista_NN.png`). Typical issues and fixes:
    - An equation split across two lines → insert a line break before it.
    - `avisos` saying an item is wider than the page → split the formula or lower `--size`.
-   - Too cramped/loose → `--size` (default 24), `--line-height`.
+   - Too cramped/loose → `--size`, `--line-height` (default 3), `--word-spacing` (default 1;
+     try 1.3 if words run together).
+   - Lines with tall matrices get extra room automatically; if something still touches the
+     line above, add an empty line before it.
 6. Deliver the PDF and mention anything you had to adapt.
 
 ### Format in 30 seconds
 
 | You write | Result |
 |---|---|
-| `x^2`, `e^{i(kx − ωt)}`, `a_n`, `x_{p,1}` | super/subscripts (`∑_{n=1}^∞` stacks them) |
+| `x^2`, `e^{i(kx − ωt)}`, `a_n`, `x_{p,1}` | super/subscripts (a sub + sup pair is stacked) |
+| `\sum_{n=1}^\infty`, `\prod_…^…`, `\lim_{x \to 0}` | limits **below/above** the operator (also `min max sup inf`) |
 | `\frac{a}{b}` | stacked fraction |
 | `\pmat{a & b ; c & d}` / `\pmat{1 ; 0}` | matrix / column vector in parentheses |
 | `\bmat{…}`, `\vmat{…}` | square brackets / determinant bars |
@@ -107,7 +125,7 @@ Plain Unicode works too: `ε₀ x² ∮ ⇒ ℏ`. Full list: `docs/FORMAT.md`.
 | `review` (`revisar`) | `revision.png` with every sample |
 | `chars` (`caracteres`) | available, derived and missing characters |
 | `validate` (`validar`) `FILE` | markup problems and characters without samples |
-| `write` (`escribir`) `(TEXT \| -f FILE \| stdin) -o OUT` | render `.pdf`/`.png`; `--sheet --preview --size --color --paper --messiness --slant --seed` |
+| `write` (`escribir`) `(TEXT \| -f FILE \| stdin) -o OUT` | render `.pdf`/`.png`; `--sheet --preview --size --color --paper --word-spacing --line-height --messiness --slant --seed` |
 | `demo` | sample handwriting without a tablet |
 | `export` (`exportar`) `ZIP` | back up the handwriting |
 | `app` | GUI for the user |

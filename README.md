@@ -86,7 +86,8 @@ python holograph.py app                      # graphical interface
 
 | You type | You get |
 |---|---|
-| `x^2`, `e^{2t}`, `a_n`, `\sum_{n=1}^\infty` | super/subscripts (stacked when both) |
+| `x^2`, `e^{2t}`, `a_n`, `x_i^2` | super/subscripts (stacked when both) |
+| `\sum_{n=1}^\infty`, `\lim_{x \to 0}` | limits below and above, as written by hand |
 | `\frac{a}{b}` | stacked fraction |
 | `\pmat{a & b ; c & d}`, `\pmat{1 ; 0}` | matrix / column vector (`\bmat`, `\vmat` for [ ] and | \|) |
 | `\sqrt{b^2 - 4ac}` | radical with a bar |
@@ -104,7 +105,7 @@ Full reference: [`docs/FORMAT.md`](docs/FORMAT.md).
 | `review` | contact sheet of all samples (discard bad ones) |
 | `chars` | characters you have, derived ones, missing ones |
 | `validate FILE` | check markup and characters without samples |
-| `write (TEXT \| -f FILE \| stdin) -o OUT` | render `.pdf`/`.png`: `--sheet --preview --size --color --paper --messiness --slant --seed` |
+| `write (TEXT \| -f FILE \| stdin) -o OUT` | render `.pdf`/`.png`: `--sheet --preview --size --color --paper --word-spacing --messiness --slant --seed` |
 | `demo` | sample handwriting, no tablet needed |
 | `export hand.zip` | back up your handwriting |
 | `app` | desktop GUI |

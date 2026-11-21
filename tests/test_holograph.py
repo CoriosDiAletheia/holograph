@@ -62,6 +62,20 @@ def home(tmp_path_factory):
     return h
 
 
+def test_demo_no_altera_estado(home):
+    d = run(["status"], home)
+    assert d["etapa"] == "sin_letra" and d["plantillas"] == [] and d["demo_disponible"]
+
+
+def test_limites_debajo_y_encima():
+    import formulas as F
+    lay = F.Layout.__new__(F.Layout)
+    nodes = F.parse(r"\sum_{n=1}^\infty a_n + \lim_{x \to 0} f + mín{1, 2} + x_i^2")
+    ops = [i for i in range(len(nodes)) if lay._op_len(nodes, i)]
+    chars = [nodes[i].ch for i in ops]
+    assert chars == ["∑", "l"]            # ∑ y lim; ni «mín{» (sin índice) ni x_i
+
+
 def test_estado_sin_letra(tmp_path):
     d = run(["estado"], tmp_path)
     assert d["etapa"] == "sin_letra"

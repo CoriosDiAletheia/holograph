@@ -82,6 +82,8 @@ def cmd_estado(a, out):
             lay = json.loads(f.read_text(encoding="utf-8"))
         except ValueError:
             continue
+        if lay.get("title") in (DEMO_TITLE, "Demo"):  # plantilla interna de `demo`: no cuenta
+            continue
         templates.append({"id": lay["session"], "paginas": len(lay["pages"]),
                           "casillas": sum(len(p["cells"]) for p in lay["pages"]),
                           "importada": lay["session"] in imported})
@@ -241,7 +243,8 @@ def cmd_escribir(a, out):
     pages = E.render(text, letra, xh=a.tamano, ancho=1700, alto=2200 if a.hoja else None,
                      color=color, papel=papel, modo=modo, semilla=a.semilla,
                      inclinacion=a.inclinacion, desorden=a.desorden, espaciado=a.separacion,
-                     interlineado=a.interlineado, formato=not a.literal, avisos=avisos)
+                     interlineado=a.interlineado, formato=not a.literal, avisos=avisos,
+                     espacio_palabras=a.espacio_palabras)
     outs = [str(p) for p in E.save(pages, a.out)]
     vistas = []
     if a.vista:
@@ -273,9 +276,12 @@ def cmd_demo(a, out):
         tpl = Path(td) / "demo.pdf"
         written = Path(td) / "demo_escrito.pdf"
         spec = "latin:3,digitos:3,acentos:2,puntuacion:2,griego:2,matematicas:2"
-        P.build(C.parse_sets(spec), tpl, "Demo", spec)
-        S.simulate(str(tpl), str(written), vacias=0.0)
-        data, n = X.import_pdf(str(written), dst, log=lambda s: None)
+        _, _, reg = P.build(C.parse_sets(spec), tpl, DEMO_TITLE, spec)
+        try:
+            S.simulate(str(tpl), str(written), vacias=0.0)
+            data, n = X.import_pdf(str(written), dst, log=lambda s: None)
+        finally:
+            Path(reg).unlink(missing_ok=True)        # no dejar una plantilla «pendiente» en el registro
     out.put(carpeta_letra=str(dst), muestras=n, uso="holograph write --hand demo -f text.txt -o test.pdf")
     out.say(f"Letra de demostración creada en {dst} ({n} muestras).")
     out.say("Pruébala:  holograph write --hand demo \"x^2 + \\frac{1}{2}\" -o prueba.png")
@@ -303,6 +309,7 @@ def cmd_app(a, out):
 
 # ------------------------------------------------------------------ argumentos
 # Nombres en inglés (principales) y en español (alias). Valores también en ambos.
+DEMO_TITLE = "Holograph demo"
 COLOR_EN = {"black": "negro", "blue": "azul", "ballpoint": "boli", "red": "rojo",
             "green": "verde", "graphite": "grafito"}
 PAPER_EN = {"white": "blanco", "ruled": "rayado", "grid": "cuadriculado", "transparent": "transparente"}
@@ -376,6 +383,8 @@ def build_parser():
     p.add_argument("--slant", "--inclinacion", dest="inclinacion", type=float, default=0.0,
                    help="extra slant in degrees (positive = to the right)")
     p.add_argument("--spacing", "--separacion", dest="separacion", type=float, default=0.12, help="letter spacing")
+    p.add_argument("--word-spacing", "--espacio-palabras", dest="espacio_palabras", type=float, default=1.0,
+                   help="space between words (1 = normal, 1.4 = roomier)")
     p.add_argument("--line-height", "--interlineado", dest="interlineado", type=float, default=3.0,
                    help="distance between lines, in x-heights")
     p.add_argument("--seed", "--semilla", dest="semilla", type=int, help="fix the randomness (same output every time)")
